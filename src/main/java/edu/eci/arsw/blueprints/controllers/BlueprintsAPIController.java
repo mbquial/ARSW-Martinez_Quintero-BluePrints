@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -31,8 +30,10 @@ public class BlueprintsAPIController {
     @Operation(summary = "Obtiene todos los blueprints")
     @ApiResponse(responseCode = "200", description = "Lista de todos los planos obtenida exitosamente")
     @GetMapping
-    public ResponseEntity<Set<Blueprint>> getAll() {
-        return ResponseEntity.ok(services.getAllBlueprints());
+    public ResponseEntity<ApiResponseS<Set<Blueprint>>> getAll() {
+        return ResponseEntity.ok(
+            new ApiResponseS<>(200, "Lista de todos los planos obtenida exitosamente", services.getAllBlueprints())
+        );
     }
 
     // GET /blueprints/{author}
@@ -42,11 +43,13 @@ public class BlueprintsAPIController {
         @ApiResponse(responseCode = "404", description = "No se encontraron planos para el autor especificado")
     })
     @GetMapping("/{author}")
-    public ResponseEntity<?> byAuthor(@PathVariable String author) {
+    public ResponseEntity<ApiResponseS<?>> byAuthor(@PathVariable String author) {
         try {
-            return ResponseEntity.ok(services.getBlueprintsByAuthor(author));
+            return ResponseEntity.ok(
+                new ApiResponseS<>(200, "Planos del autor encontrados", services.getBlueprintsByAuthor(author))
+            );
         } catch (BlueprintNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseS<>(404, e.getMessage(), null));
         }
     }
 
@@ -59,9 +62,11 @@ public class BlueprintsAPIController {
     @GetMapping("/{author}/{bpname}")
     public ResponseEntity<?> byAuthorAndName(@PathVariable String author, @PathVariable String bpname) {
         try {
-            return ResponseEntity.ok(services.getBlueprint(author, bpname));
+            return ResponseEntity.ok(
+                new ApiResponseS<>(200, "Plano encontrado exitosamente", services.getBlueprint(author, bpname))
+            );
         } catch (BlueprintNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseS<>(404, e.getMessage(), null));
         }
     }
 
@@ -77,9 +82,9 @@ public class BlueprintsAPIController {
         try {
             Blueprint bp = new Blueprint(req.author(), req.name(), req.points());
             services.addNewBlueprint(bp);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseS<>(201, "Plano creado exitosamente", bp));
         } catch (BlueprintPersistenceException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponseS<>(403, e.getMessage(), null));
         }
     }
 
@@ -94,9 +99,9 @@ public class BlueprintsAPIController {
                                       @RequestBody Point p) {
         try {
             services.addPoint(author, bpname, p.x(), p.y());
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ApiResponseS<>(202, "Punto agregado exitosamente", null));
         } catch (BlueprintNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseS<>(404, e.getMessage(), null));
         }
     }
 
