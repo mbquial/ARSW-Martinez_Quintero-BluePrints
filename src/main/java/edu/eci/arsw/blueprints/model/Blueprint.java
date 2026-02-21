@@ -1,15 +1,30 @@
 package edu.eci.arsw.blueprints.model;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "blueprints")
 public class Blueprint {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String author;
     private String name;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "blueprint_points",
+            joinColumns = @JoinColumn(name = "blueprint_id")
+    )
     private final List<Point> points = new ArrayList<>();
+
+    protected Blueprint() {}
 
     public Blueprint(String author, String name, List<Point> pts) {
         this.author = author;
@@ -34,4 +49,5 @@ public class Blueprint {
     public int hashCode() {
         return Objects.hash(author, name);
     }
+
 }
