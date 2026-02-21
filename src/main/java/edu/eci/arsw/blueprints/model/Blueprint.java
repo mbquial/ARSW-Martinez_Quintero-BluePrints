@@ -1,6 +1,8 @@
 package edu.eci.arsw.blueprints.model;
 
 import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,13 +10,17 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "blueprints")
+@Schema(description = "Blueprint que contiene información del autor, nombre y puntos")
 public class Blueprint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(description = "Nombre del autor del blueprint", example = "Karla")
     private String author;
+    
+    @Schema(description = "Nombre del blueprint", example = "Casita")
     private String name;
 
     @ElementCollection
@@ -22,6 +28,8 @@ public class Blueprint {
             name = "blueprint_points",
             joinColumns = @JoinColumn(name = "blueprint_id")
     )
+    
+    @Schema(description = "Lista de puntos que componen el blueprint")
     private final List<Point> points = new ArrayList<>();
 
     protected Blueprint() {}

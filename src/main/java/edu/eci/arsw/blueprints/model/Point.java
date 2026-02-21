@@ -1,8 +1,10 @@
 package edu.eci.arsw.blueprints.model;
 
 import jakarta.persistence.Embeddable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Embeddable
+@Schema(description = "Punto en coordenadas (x, y)")
 public class Point {
     private int x;
     private int y;

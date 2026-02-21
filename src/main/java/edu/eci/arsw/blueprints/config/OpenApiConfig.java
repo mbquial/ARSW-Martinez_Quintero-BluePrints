@@ -2,17 +2,34 @@ package edu.eci.arsw.blueprints.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
 
     @Bean
     public OpenAPI api() {
-        return new OpenAPI().info(new Info()
-                .title("ARSW Blueprints API")
-                .version("v1")
-                .description("Blueprints Laboratory (Java 21 / Spring Boot 3.3.x)"));
+        return new OpenAPI()
+                .info(new Info()
+                        .title("ARSW Blueprints API")
+                        .version("1.0.0")
+                        .description("REST API para gestión de blueprints. " +
+                                    "Permite crear, consultar y modificar blueprints con filtros personalizables.\n\n" +
+                                    "**Contactos:**\n" +
+                                    "- María Belén Quintero: maria.quintero-a@mail.escuelaing.edu.co\n" +
+                                    "- Nikolas Martínez Rivera: nikolas.martinezrive@mail.escuelaing.edu.co")
+                        .license(new License()
+                                .name("MIT License")
+                                .url("https://opensource.org/licenses/MIT")))
+                .servers(List.of(
+                        new Server()
+                                .url("http://localhost:8080")
+                                .description("Servidor de desarrollo local")
+                ));
     }
 }
